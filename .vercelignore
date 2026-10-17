@@ -1,0 +1,8 @@
+.git
+data
+__pycache__
+.ipynb_checkpoints
+humidity_outputs/*.joblib
+humidity_outputs/*.png
+Humidity_Prediction.ipynb
+source_docs

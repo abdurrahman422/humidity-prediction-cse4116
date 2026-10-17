@@ -1,9 +1,5 @@
-pandas
-numpy
-scikit-learn
-pyarrow
-lightgbm
-matplotlib
-joblib
-ipywidgets
-requests
+pandas==3.0.6
+numpy==2.5.4
+scikit-learn==1.9.1
+joblib==1.6.0
+fastapi==0.143.3

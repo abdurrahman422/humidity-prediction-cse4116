@@ -59,7 +59,7 @@ fetch('/api/info').then(r => r.json()).then(data => {
  $('hit').textContent=m.within_1pp_percent.toFixed(3)+'%';
  $('accuracy').textContent=m.high_humidity_accuracy_percent.toFixed(3)+'%'; $('f1').textContent=m.high_humidity_F1.toFixed(6);
  $('submit').disabled=false;
-}).catch(() => $('message').textContent='Could not load the model. Restart the app.');
+}).catch(() => $('message').textContent='Could not load the model. Please reload the page.');
 let version=0;
 $('form').addEventListener('input',() => {version++;$('result').textContent='Humidity: —';$('message').textContent='';});
 $('form').addEventListener('submit',async event => {
@@ -68,7 +68,7 @@ $('form').addEventListener('submit',async event => {
  $('submit').disabled=true; $('message').textContent='';
  try{
   const response=await fetch('/api/predict',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(values)});
-  const data=await response.json(); if(!response.ok) throw Error(data.error);
+  const data=await response.json(); if(!response.ok) throw Error(data.error || data.detail || 'Prediction failed');
   if(requestVersion===version){$('result').textContent='Humidity: '+data.humidity_pct.toFixed(2)+'%';$('message').textContent=data.warning;}
  }catch(error){$('result').textContent='Humidity: —';$('message').textContent=error.message;}
  finally{$('submit').disabled=false;}

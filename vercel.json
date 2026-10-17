@@ -1,0 +1,10 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "fastapi",
+  "functions": {
+    "app.py": {
+      "maxDuration": 60,
+      "excludeFiles": "{data/**,humidity_outputs/*.joblib,humidity_outputs/*.png,Humidity_Prediction.ipynb,source_docs/**,test_humidity.py,humidity_server.py,requirements-training.txt}"
+    }
+  }
+}

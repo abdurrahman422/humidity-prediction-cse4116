@@ -58,8 +58,11 @@ def train():
     limits = {c: {"min": float(data.loc[train_rows, c].min()),
                   "max": float(data.loc[train_rows, c].max())} for c in columns[:2]}
     OUT.mkdir(exist_ok=True)
-    joblib.dump({"model": model, "districts": districts, "limits": limits,
-                 "feature_columns": list(x.columns)}, OUT / "humidity_model.joblib")
+    saved = {"model": model, "districts": districts, "limits": limits,
+             "feature_columns": list(x.columns)}
+    joblib.dump(saved, OUT / "humidity_model.joblib")
+    (ROOT / "deployment").mkdir(exist_ok=True)
+    joblib.dump(saved, ROOT / "deployment/humidity_model.joblib.gz", compress=("gzip", 3))
     (OUT / "summary.json").write_text(json.dumps(metrics, indent=2))
     print(metrics)
     print("Training complete. Restart the app to load this model.")

@@ -9,17 +9,22 @@ The notebook contains data loading, preprocessing, training, evaluation and a fo
 
 For a fresh download of this repository:
 
-1. Install Python and run `python -m pip install -r requirements.txt`.
+1. Install Python and run `python -m pip install -r requirements-training.txt`.
 2. Download `dhaka_hourly_core_2015_2025.parquet` from the source DOI below into `data/`.
 3. Run `python humidity_model.py` to create the saved model locally.
 4. Run `python humidity_server.py --open` to open the application.
 
-The large dataset and trained `.joblib` artifact are excluded from GitHub.
+The large dataset and uncompressed `.joblib` artifact are excluded from GitHub.
 The Colab notebook can download the dataset and train the model independently.
+
+For Vercel, import this repository with the FastAPI framework preset. `app.py`
+serves the same form and prediction API. The losslessly compressed Random Forest
+in `deployment/` is included; training does not run on Vercel. Python 3.12 and
+runtime dependencies are specified in `.python-version` and `requirements.txt`.
 
 To retrain locally: `python humidity_model.py` or `Train_Humidity_Model.cmd`.
 To check the running app: `python test_humidity.py`.
-Install packages if needed: `python -m pip install -r requirements.txt`.
+Install training packages if needed: `python -m pip install -r requirements-training.txt`.
 
 MAE/RMSE are percentage points; accuracy/F1 refer only to the RH >=85% decision.
 Source humidity is derived from temperature/dewpoint; this is estimation, not future weather forecasting.
