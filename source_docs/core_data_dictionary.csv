@@ -1,0 +1,33 @@
+field,description,unit,data_type,missing_policy
+district,Dhaka Division ADM2 district name,text,str,Blank/null means unavailable; no imputation or zero filling
+admin_uid,Pinned geoBoundaries v5 ADM2 district identifier,identifier,str,Blank/null means unavailable; no imputation or zero filling
+datetime_utc,Valid observation time in UTC,ISO 8601 UTC,str,Blank/null means unavailable; no imputation or zero filling
+datetime_bdt,Valid observation time in Asia/Dhaka (UTC+06:00),ISO 8601 BDT,str,Blank/null means unavailable; no imputation or zero filling
+pm2_5_ug_m3,Area-weighted CAMS surface PM2.5; kg/m3 multiplied by 1e9; null under documented source-zero QC,ug/m3,float64,Blank/null means unavailable; no imputation or zero filling
+pm10_ug_m3,Area-weighted CAMS surface PM10; kg/m3 multiplied by 1e9; null under documented source-zero QC,ug/m3,float64,Blank/null means unavailable; no imputation or zero filling
+temperature_c,"Area-weighted ERA5 2 m temperature, kelvin minus 273.15",C,float64,Blank/null means unavailable; no imputation or zero filling
+dewpoint_c,"Area-weighted ERA5 2 m dewpoint, kelvin minus 273.15",C,float64,Blank/null means unavailable; no imputation or zero filling
+relative_humidity_pct,"Magnus humidity of aggregated temperature/dewpoint, clipped to 0-100",%,float64,Blank/null means unavailable; no imputation or zero filling
+u10_ms,ERA5 10 m eastward wind component; negative denotes westward,m/s,float64,Blank/null means unavailable; no imputation or zero filling
+v10_ms,ERA5 10 m northward wind component; negative denotes southward,m/s,float64,Blank/null means unavailable; no imputation or zero filling
+wind_speed_ms,Magnitude sqrt(u10^2 + v10^2),m/s,float64,Blank/null means unavailable; no imputation or zero filling
+wind_direction_deg,"Meteorological direction wind comes from, clockwise from north",degree,float64,Blank/null means unavailable; no imputation or zero filling
+pm2_5_24h_ug_m3,"Trailing 24-hour PM2.5 mean, >=18 valid hours",ug/m3,float64,Blank/null means unavailable; no imputation or zero filling
+pm10_24h_ug_m3,"Trailing 24-hour PM10 mean, >=18 valid hours",ug/m3,float64,Blank/null means unavailable; no imputation or zero filling
+pm2_5_24h_valid_hours,Number of available or expected hourly PM observations in the specified window,hour count,int64,Blank/null means unavailable; no imputation or zero filling
+pm10_24h_valid_hours,Number of available or expected hourly PM observations in the specified window,hour count,int64,Blank/null means unavailable; no imputation or zero filling
+aqi_estimate_pm25,"PM2.5 sub-index of truncated trailing 24-hour mean, EPA 2024",AQI index,Int64,Blank/null means unavailable; no imputation or zero filling
+aqi_estimate_pm10,"PM10 sub-index of truncated trailing 24-hour mean, EPA 2024",AQI index,Int64,Blank/null means unavailable; no imputation or zero filling
+trailing_24h_pm_aqi_proxy,"Maximum available PM sub-index; >=18 valid hours, uncapped above 500",AQI index,Int64,Blank/null means unavailable; no imputation or zero filling
+trailing_24h_dominant_pm_pollutant,PM pollutant with the maximum available sub-index; blank if unavailable,pollutant,str,Blank/null means unavailable; no imputation or zero filling
+trailing_24h_pm_aqi_category,EPA AQI category for the matching PM proxy; blank if unavailable,category,str,Blank/null means unavailable; no imputation or zero filling
+trailing_24h_pm_aqi_coverage_status,Coverage status; meanings in quality_flag_dictionary.csv,category,str,Blank/null means unavailable; no imputation or zero filling
+pm_source_qc_status,VALID_SOURCE or PENDING_SOURCE_DATA under step-0 QC,category,str,Blank/null means unavailable; no imputation or zero filling
+cams_pm_initialization_zero_flag,Both full PM grids zero at forecast lead 0; processed PM withheld,boolean,bool,Blank/null means unavailable; no imputation or zero filling
+aqi_method,US EPA 2024 PM breakpoints applied retrospectively to model estimates,method code,str,Blank/null means unavailable; no imputation or zero filling
+aqi_status,PM_ONLY_AQI; gas pollutants are excluded,category,str,Blank/null means unavailable; no imputation or zero filling
+spatial_method,ADM2 fractional cell intersection areas measured in EPSG:6933,method code,str,Blank/null means unavailable; no imputation or zero filling
+minimum_valid_area_fraction,Documented minimum polygon area coverage threshold,fraction,float64,Blank/null means unavailable; no imputation or zero filling
+data_nature,Model-derived CAMS forecast and ERA5 reanalysis district estimates,category,str,Blank/null means unavailable; no imputation or zero filling
+aqi_regulatory_equivalent,False: this product has no regulatory equivalence,boolean,bool,Blank/null means unavailable; no imputation or zero filling
+aqi_is_official_monitor_value,False: this product is not an official monitoring observation,boolean,bool,Blank/null means unavailable; no imputation or zero filling

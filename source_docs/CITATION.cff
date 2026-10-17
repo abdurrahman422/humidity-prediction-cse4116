@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "Cite this dataset using the repository citation once deposited."
+type: dataset
+title: "A District-Level CAMS Forecast-ERA5 Reanalysis PM-Based Air-Quality Proxy and Meteorological Dataset for Dhaka Division, Bangladesh (July 2015-December 2025)"
+version: 1.0.0
+license: CC-BY-4.0
+authors:
+  - given-names: "Md"
+    family-names: "Abdur Rahman"
+    email: "abdurrahman422488@gmail.com"
+    orcid: "https://orcid.org/0009-0009-5859-1652"
+  - given-names: "Shabbo"
+    family-names: "Das"
+    email: "shabbodas347@gmail.com"
+    orcid: "https://orcid.org/0009-0004-3422-8107"
+  - given-names: "Rokshana Akter"
+    family-names: "Riya"
+    email: "riya167880@gmail.com"
+    orcid: "https://orcid.org/0009-0008-1367-7842"
+  - given-names: "Md."
+    family-names: "Fatin Nibbrash Nakib"
+    email: "fatinnibbrash@gmail.com"
+    orcid: "https://orcid.org/0009-0008-1470-3133"
+# DOI and URL remain absent until assigned by the repository.

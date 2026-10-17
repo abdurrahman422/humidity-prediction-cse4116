@@ -1,0 +1,11 @@
+Creative Commons Attribution 4.0 International (CC BY 4.0)
+
+The depositor selects CC BY 4.0 for the project-created derived dataset and documentation.
+License: https://creativecommons.org/licenses/by/4.0/
+Legal code: https://creativecommons.org/licenses/by/4.0/legalcode.en
+
+Attribute the dataset creators listed in AUTHORS.md and the DOI once assigned; identify modifications.
+This grant applies only to rights the depositor holds. Original Copernicus files and the
+geoBoundaries subset retain their upstream terms and attribution, not a new blanket license.
+See RESEARCH_PROVENANCE.md. No provider endorses this dataset.
+Named creators are listed in AUTHORS.md; attribution does not imply recorded author consent or completed human review.

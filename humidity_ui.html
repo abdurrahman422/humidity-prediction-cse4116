@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Machine Learning Laboratory (CSE 4116)</title>
+<style>
+body{font-family:Arial,sans-serif;background:#f4f6f5;color:#253b34;margin:0}
+main{max-width:760px;margin:45px auto;padding:28px;background:white;border:1px solid #ddd;border-radius:10px}
+h1{font-size:24px;margin-top:0}h2{font-size:19px}p{line-height:1.6;color:#56665e}
+form{display:grid;grid-template-columns:1fr 1fr;gap:18px}label{display:block;font-size:14px;margin-bottom:7px}
+input,select,button{box-sizing:border-box;width:100%;padding:11px;font-size:16px;border:1px solid #bbc8bf;border-radius:5px}
+button{background:#21644d;color:white;cursor:pointer}.full{grid-column:1/-1}
+#result{font-size:30px;color:#21644d;font-weight:bold;margin:24px 0 10px}#message{color:#9a3e1c;min-height:20px}
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:15px}.metrics div{background:#edf3ef;padding:13px;border-radius:5px}
+.metrics strong{display:block;font-size:19px;margin-top:8px}small{line-height:1.6;color:#617068}.note{font-size:12px;margin-top:20px}
+@media(max-width:600px){main{margin:15px;padding:18px}form{grid-template-columns:1fr}.full{grid-column:1}.metrics{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<main>
+<h1>Machine Learning Laboratory (CSE 4116)</h1>
+<h2>Relative Humidity Prediction</h2>
+<p>Enter the five inputs to estimate humidity using Random Forest.</p>
+<form id="form">
+<div><label for="temperature">Temperature (°C)</label><input id="temperature" type="number" step="any" min="-60" max="60" value="30" required></div>
+<div><label for="dewpoint">Dewpoint (°C)</label><input id="dewpoint" type="number" step="any" min="-80" max="60" value="25" required></div>
+<div class="full"><label for="district">District</label><select id="district" required></select></div>
+<div><label for="month">Month</label><select id="month"></select></div>
+<div><label for="hour">Hour (Bangladesh time)</label><select id="hour"></select></div>
+<button id="submit" class="full" disabled>Predict Humidity</button>
+</form>
+<div id="result" aria-live="polite">Humidity: —</div>
+<div id="message" role="alert"></div>
+<h2>Evaluation results</h2>
+<div class="metrics">
+<div>MAE<strong id="mae">—</strong><small>percentage points</small></div>
+<div>RMSE<strong id="rmse">—</strong><small>percentage points</small></div>
+<div>R²<strong id="r2">—</strong><small>regression score</small></div>
+<div>Within ±1 pp<strong id="hit">—</strong><small>tolerance hit rate</small></div>
+<div>Accuracy*<strong id="accuracy">—</strong><small>high-humidity decision</small></div>
+<div>F1 score*<strong id="f1">—</strong><small>high-humidity decision</small></div>
+</div>
+<p class="note">*High humidity means RH ≥85%. Accuracy/F1 apply to this separate decision. The main output is continuous humidity.</p>
+<p class="note">This dataset derives humidity from temperature and dewpoint. This model estimates humidity for supplied conditions; it does not forecast future weather. Evaluation years: 2024–2025, inspected during development.</p>
+<p class="note">Source: <a href="https://doi.org/10.17632/htz4fhttr4.1">Mendeley Data v1</a> · CC BY 4.0</p>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+months.forEach((name,i) => $('month').add(new Option(name,i+1)));
+for(let i=0;i<24;i++) $('hour').add(new Option(String(i).padStart(2,'0')+':00',i));
+$('month').value='10'; $('hour').value='22';
+fetch('/api/info').then(r => r.json()).then(data => {
+ data.districts.forEach(name => $('district').add(new Option(name,name)));
+ $('district').value='Dhaka';
+ const m=data.metrics;
+ $('mae').textContent=m.MAE.toFixed(4); $('rmse').textContent=m.RMSE.toFixed(4); $('r2').textContent=m.R2.toFixed(8);
+ $('hit').textContent=m.within_1pp_percent.toFixed(3)+'%';
+ $('accuracy').textContent=m.high_humidity_accuracy_percent.toFixed(3)+'%'; $('f1').textContent=m.high_humidity_F1.toFixed(6);
+ $('submit').disabled=false;
+}).catch(() => $('message').textContent='Could not load the model. Restart the app.');
+let version=0;
+$('form').addEventListener('input',() => {version++;$('result').textContent='Humidity: —';$('message').textContent='';});
+$('form').addEventListener('submit',async event => {
+ event.preventDefault(); const requestVersion=version;
+ const values={temperature_c:Number($('temperature').value),dewpoint_c:Number($('dewpoint').value),district:$('district').value,month:Number($('month').value),hour:Number($('hour').value)};
+ $('submit').disabled=true; $('message').textContent='';
+ try{
+  const response=await fetch('/api/predict',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(values)});
+  const data=await response.json(); if(!response.ok) throw Error(data.error);
+  if(requestVersion===version){$('result').textContent='Humidity: '+data.humidity_pct.toFixed(2)+'%';$('message').textContent=data.warning;}
+ }catch(error){$('result').textContent='Humidity: —';$('message').textContent=error.message;}
+ finally{$('submit').disabled=false;}
+});
+</script>
+</body></html>
