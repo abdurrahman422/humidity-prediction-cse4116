@@ -4,7 +4,7 @@
   "functions": {
     "app.py": {
       "maxDuration": 60,
-      "excludeFiles": "{data/**,humidity_outputs/*.joblib,humidity_outputs/*.png,Humidity_Prediction.ipynb,source_docs/**,test_humidity.py,humidity_server.py,requirements-training.txt}"
+      "excludeFiles": "{data/**,forecast_results/**,humidity_outputs/*.joblib,humidity_outputs/*.png,*.ipynb,source_docs/**,test_*.py,compare_models.py,humidity_server.py,requirements-training.txt}"
     }
   }
 }

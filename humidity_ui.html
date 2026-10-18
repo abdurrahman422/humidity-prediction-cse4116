@@ -14,6 +14,12 @@ button{background:#21644d;color:white;cursor:pointer}.full{grid-column:1/-1}
 #result{font-size:30px;color:#21644d;font-weight:bold;margin:24px 0 10px}#message{color:#9a3e1c;min-height:20px}
 .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:15px}.metrics div{background:#edf3ef;padding:13px;border-radius:5px}
 .metrics strong{display:block;font-size:19px;margin-top:8px}small{line-height:1.6;color:#617068}.note{font-size:12px;margin-top:20px}
+.comparison{margin-top:30px;padding-top:20px;border-top:1px solid #dce5df}.comparison p{font-size:14px}
+.chart-card{border:1px solid #dce5df;border-radius:8px;padding:15px;margin-top:16px}.chart-card h3{font-size:16px;margin:0 0 12px}
+.chart-card select{max-width:260px;font-size:14px;padding:8px;margin-bottom:10px}.chart-card svg{display:block;width:100%;height:auto}
+.table-scroll{overflow-x:auto;margin-top:20px}table{border-collapse:collapse;width:100%;font-size:13px;white-space:nowrap}
+th,td{text-align:right;padding:11px 9px;border-bottom:1px solid #dce5df}th{background:#edf3ef}th:first-child,td:first-child{text-align:left}
+tr.selected{background:#f0f7f2}.legend{font-size:12px;color:#56665e}.comparison-status{font-size:13px;color:#56665e}
 @media(max-width:600px){main{margin:15px;padding:18px}form{grid-template-columns:1fr}.full{grid-column:1}.metrics{grid-template-columns:1fr 1fr}}
 </style>
 </head>
@@ -42,6 +48,33 @@ button{background:#21644d;color:white;cursor:pointer}.full{grid-column:1/-1}
 <div>F1 score*<strong id="f1">—</strong><small>high-humidity decision</small></div>
 </div>
 <p class="note">*High humidity means RH ≥85%. Accuracy/F1 apply to this separate decision. The main output is continuous humidity.</p>
+<section class="comparison" aria-labelledby="comparison-title">
+<h2 id="comparison-title">Model comparison</h2>
+<p>Linear Regression, Random Forest and LightGBM estimate humidity from the same five inputs above. The prediction form uses Random Forest, selected by validation MAE.</p>
+<p id="comparison-status" class="comparison-status" role="status">Loading measured model results…</p>
+<div id="comparison-content" hidden>
+<div class="chart-card">
+<h3>Prediction error — lower is better</h3>
+<label for="error-metric">Error metric</label>
+<select id="error-metric"><option value="MAE">MAE (percentage points)</option><option value="RMSE">RMSE (percentage points)</option><option value="MSE">MSE (squared percentage points)</option><option value="MAPE_percent">MAPE (%)</option></select>
+<svg id="error-chart" viewBox="0 0 720 280" role="img" aria-label="Model error comparison"></svg>
+</div>
+<div class="chart-card">
+<h3>High-humidity accuracy and F1 — higher is better</h3>
+<p class="legend">High = RH ≥85%. <span style="color:#21644d">■ Accuracy (%)</span> &nbsp; <span style="color:#d98a3a">■ F1 ×100 (%)</span>. This is a separate decision task, not regression accuracy.</p>
+<svg id="class-chart" viewBox="0 0 720 280" role="img" aria-label="Accuracy and F1 comparison for humidity at least 85 percent"></svg>
+</div>
+<div class="chart-card">
+<h3>R² score — higher is better</h3>
+<p class="legend">R² is a regression score, not classification accuracy.</p>
+<svg id="r2-chart" viewBox="0 0 720 280" role="img" aria-label="R squared score comparison"></svg>
+</div>
+<div class="table-scroll">
+<table><caption>Results on the same evaluation records</caption><thead><tr><th>Model</th><th>MAE (pp)</th><th>RMSE (pp)</th><th>R²</th><th>Accuracy*</th><th>Precision*</th><th>Recall*</th><th>F1*</th><th>Within ±1 pp</th><th>Training rows</th></tr></thead><tbody id="comparison-rows"></tbody></table>
+</div>
+<p class="note" id="comparison-notes"></p>
+</div>
+</section>
 <p class="note">This dataset derives humidity from temperature and dewpoint. This model estimates humidity for supplied conditions; it does not forecast future weather. Evaluation years: 2024–2025, inspected during development.</p>
 <p class="note">Source: <a href="https://doi.org/10.17632/htz4fhttr4.1">Mendeley Data v1</a> · CC BY 4.0</p>
 </main>
@@ -73,5 +106,61 @@ $('form').addEventListener('submit',async event => {
  }catch(error){$('result').textContent='Humidity: —';$('message').textContent=error.message;}
  finally{$('submit').disabled=false;}
 });
+
+let comparisonData;
+const chartColors=['#7b8996','#21644d','#d98a3a'];
+function svgElement(svg,name,attributes,text){
+ const element=document.createElementNS('http://www.w3.org/2000/svg',name);
+ for(const [key,value] of Object.entries(attributes)) element.setAttribute(key,value);
+ if(text!==undefined) element.textContent=text;
+ svg.appendChild(element); return element;
+}
+function drawChart(id,series,maximum){
+ const svg=$(id); svg.replaceChildren();
+ const models=comparisonData.models;
+ const values=models.flatMap(model=>series.map(item=>model[item.key]*item.scale));
+ const limit=maximum || Math.max(...values)*1.18 || 1;
+ const top=30,bottom=220,left=62,right=700,height=bottom-top,groupWidth=(right-left)/models.length;
+ for(let tick=0;tick<=4;tick++){
+  const value=limit*tick/4,y=bottom-height*tick/4;
+  svgElement(svg,'line',{x1:left,x2:right,y1:y,y2:y,stroke:'#e3e9e5'});
+  svgElement(svg,'text',{x:left-9,y:y+4,'text-anchor':'end',fill:'#617068','font-size':12},Number(value.toPrecision(3)).toString());
+ }
+ models.forEach((model,index)=>{
+  const center=left+groupWidth*(index+.5),barWidth=series.length===1?100:66;
+  series.forEach((item,position)=>{
+   const value=model[item.key]*item.scale,barHeight=Math.max(0,value)/limit*height;
+   const x=center+(position-(series.length-1)/2)*(barWidth+6)-barWidth/2;
+   const bar=svgElement(svg,'rect',{x,y:bottom-barHeight,width:barWidth,height:barHeight,rx:3,fill:series.length===1?chartColors[index]:item.color});
+   svgElement(bar,'title',{},model.model+' · '+item.label+': '+value.toFixed(item.digits));
+   svgElement(svg,'text',{x:x+barWidth/2,y:bottom-barHeight-9,'text-anchor':'middle',fill:'#253b34','font-size':12},value.toFixed(item.digits));
+  });
+  svgElement(svg,'text',{x:center,y:250,'text-anchor':'middle',fill:'#253b34','font-size':13},model.model);
+ });
+}
+function drawError(){
+ const key=$('error-metric').value;
+ $('error-chart').setAttribute('aria-label',key+' for '+comparisonData.models.map(m=>m.model+': '+m[key].toFixed(6)).join(', '));
+ drawChart('error-chart',[{key,scale:1,label:key,digits:4}]);
+}
+fetch('/api/comparison').then(async response=>{
+ if(!response.ok) throw Error('Model comparison could not be loaded.');
+ return response.json();
+}).then(data=>{
+ comparisonData=data;
+ $('comparison-status').textContent=data.test_rows.toLocaleString()+' evaluation records · '+data.test_years+' · validation: '+data.validation_year;
+ $('comparison-notes').textContent='*Classification metrics use RH ≥85%. F1, precision and recall are scores from 0 to 1. '+data.notes;
+ for(const model of data.models){
+  const tr=document.createElement('tr'); if(model.model===data.selected_model) tr.className='selected';
+  const cells=[model.model+(model.model===data.selected_model?' (selected)':''),model.MAE.toFixed(6),model.RMSE.toFixed(6),model.R2.toFixed(8),model.accuracy_percent.toFixed(4)+'%',model.precision.toFixed(6),model.recall.toFixed(6),model.F1.toFixed(6),model.within_1pp_percent.toFixed(3)+'%',model.training_rows.toLocaleString()];
+  for(const value of cells){const td=document.createElement('td');td.textContent=value;tr.appendChild(td);}
+  $('comparison-rows').appendChild(tr);
+ }
+ $('comparison-content').hidden=false;
+ drawError();
+ drawChart('class-chart',[{key:'accuracy_percent',scale:1,label:'Accuracy (%)',digits:3,color:'#21644d'},{key:'F1',scale:100,label:'F1 ×100',digits:3,color:'#d98a3a'}],100);
+ drawChart('r2-chart',[{key:'R2',scale:1,label:'R²',digits:6}],1);
+ $('error-metric').addEventListener('change',drawError);
+}).catch(error=>{$('comparison-status').textContent=error.message;});
 </script>
 </body></html>

@@ -1,0 +1,94 @@
+{
+  "task": "Same-time relative humidity estimation",
+  "selected_model": "Random Forest",
+  "inputs": [
+    "Temperature",
+    "Dewpoint",
+    "District",
+    "Month",
+    "Hour (Bangladesh time)"
+  ],
+  "validation_year": 2023,
+  "test_years": "2024\u20132025",
+  "test_rows": 228072,
+  "class_threshold": 85,
+  "models": [
+    {
+      "model": "Linear Regression",
+      "training_rows": 855192,
+      "validation_MAE": 1.254607401911229,
+      "MAE": 1.2235575779665164,
+      "RMSE": 1.8081102298190046,
+      "R2": 0.98480184284213,
+      "MSE": 3.269262603176134,
+      "MAPE_percent": 1.8300903121355048,
+      "accuracy_percent": 97.67704935283594,
+      "F1": 0.9768356987329153,
+      "precision": 0.9712556732223904,
+      "recall": 0.9824802110817942,
+      "within_1pp_percent": 53.83300010522992,
+      "confusion_matrix": [
+        [
+          111066,
+          3306
+        ],
+        [
+          1992,
+          111708
+        ]
+      ]
+    },
+    {
+      "model": "Random Forest",
+      "training_rows": 150000,
+      "validation_MAE": 0.014709088741324294,
+      "MAE": 0.01240825568690224,
+      "RMSE": 0.04620664938296665,
+      "R2": 0.9999900745528983,
+      "MSE": 0.002135054447200412,
+      "MAPE_percent": 0.02298099539829316,
+      "accuracy_percent": 99.9837770528605,
+      "F1": 0.9998372975563852,
+      "precision": 0.999797729291437,
+      "recall": 0.9998768689533861,
+      "within_1pp_percent": 99.9671156476902,
+      "confusion_matrix": [
+        [
+          114349,
+          23
+        ],
+        [
+          14,
+          113686
+        ]
+      ]
+    },
+    {
+      "model": "LightGBM",
+      "training_rows": 855192,
+      "validation_MAE": 0.07761450526115664,
+      "MAE": 0.07122761441517121,
+      "RMSE": 0.17187607684375616,
+      "R2": 0.9998626679228889,
+      "MSE": 0.02954138579120077,
+      "MAPE_percent": 0.12435912330894391,
+      "accuracy_percent": 99.9022238591322,
+      "F1": 0.9990196983484335,
+      "precision": 0.998664100333096,
+      "recall": 0.9993755496921723,
+      "within_1pp_percent": 99.70974078361219,
+      "confusion_matrix": [
+        [
+          114220,
+          152
+        ],
+        [
+          71,
+          113629
+        ]
+      ]
+    }
+  ],
+  "source_sha256": "5890710240a38212a44b5f6e58ad345ba4c6fc8c314da989810e2c38f031fd3b",
+  "notes": "Same test rows and features for every model. Training budgets differ: Random Forest 150,000 rows; others 855,192. Target humidity is formula-derived. Scores measure estimation, not next-hour forecasting. The evaluation years were inspected during development."
+}

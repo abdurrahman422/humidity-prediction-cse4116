@@ -22,6 +22,12 @@ serves the same form and prediction API. The losslessly compressed Random Forest
 in `deployment/` is included; training does not run on Vercel. Python 3.12 and
 runtime dependencies are specified in `.python-version` and `requirements.txt`.
 
+The live model-comparison charts use `humidity_outputs/model_comparison.json`.
+Run `python compare_models.py` with the training dependencies to regenerate
+same-time estimation metrics for Linear Regression, Random Forest and LightGBM.
+Accuracy/F1 are for the separate RH >=85% decision; MAE/RMSE/R2 evaluate regression.
+These are not the next-hour forecasting experiment's scores.
+
 To retrain locally: `python humidity_model.py` or `Train_Humidity_Model.cmd`.
 To check the running app: `python test_humidity.py`.
 Install training packages if needed: `python -m pip install -r requirements-training.txt`.

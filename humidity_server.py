@@ -25,6 +25,8 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path == "/api/info":
             summary = json.loads((OUT / "summary.json").read_text())
             self.reply(200, {"districts": saved["districts"], "metrics": summary})
+        elif self.path == "/api/comparison":
+            self.reply(200, json.loads((OUT / "model_comparison.json").read_text(encoding="utf8")))
         else:
             self.reply(404, {"error": "Not found"})
 

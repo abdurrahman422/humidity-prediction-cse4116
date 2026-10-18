@@ -6,3 +6,5 @@ humidity_outputs/*.joblib
 humidity_outputs/*.png
 Humidity_Prediction.ipynb
 source_docs
+forecast_results
+*.ipynb

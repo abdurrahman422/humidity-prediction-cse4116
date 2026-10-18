@@ -43,3 +43,8 @@ async def prediction(request: Request):
     except Exception:
         logging.exception("Humidity prediction failed")
         raise HTTPException(status_code=503, detail="Prediction is temporarily unavailable")
+
+
+@app.get("/api/comparison")
+def comparison():
+    return json.loads((OUT / "model_comparison.json").read_text(encoding="utf8"))

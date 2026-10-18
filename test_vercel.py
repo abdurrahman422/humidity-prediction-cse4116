@@ -10,6 +10,20 @@ client = TestClient(app)
 assert client.get("/").status_code == 200
 assert "Machine Learning Laboratory" in client.get("/").text
 assert len(client.get("/api/info").json()["districts"]) == 13
+comparison = client.get("/api/comparison").json()
+assert comparison["test_rows"] == 228072
+assert comparison["selected_model"] == "Random Forest"
+assert {row["model"] for row in comparison["models"]} == {"Linear Regression", "Random Forest", "LightGBM"}
+for row in comparison["models"]:
+    tn, fp, fn, tp = np.asarray(row["confusion_matrix"]).ravel()
+    assert tn + fp + fn + tp == comparison["test_rows"]
+    assert np.isclose(row["accuracy_percent"], 100 * (tn + tp) / comparison["test_rows"])
+    assert np.isclose(row["F1"], 2 * tp / (2 * tp + fp + fn))
+    assert np.isclose(row["MSE"], row["RMSE"] ** 2)
+    assert all(np.isfinite(row[key]) for key in ["MAE", "RMSE", "R2", "accuracy_percent", "precision", "recall", "F1"])
+assert 'id="error-chart"' in client.get("/").text
+assert 'id="class-chart"' in client.get("/").text
+assert 'id="r2-chart"' in client.get("/").text
 values = {"temperature_c": 30, "dewpoint_c": 25, "district": "Dhaka", "month": 10, "hour": 22}
 response = client.post("/api/predict", json=values)
 assert response.status_code == 200
